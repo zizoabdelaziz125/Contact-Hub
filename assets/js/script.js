@@ -516,6 +516,31 @@ function validate(input, rule) {
   feedback.classList.toggle("d-none", isValid);
 }
 
+function isExist(input) {
+  const value = input.value.trim();
+  const feedback = input.parentElement.querySelector(".invalid-feedback");
+
+  if (!value) {
+    input.classList.remove("is-valid", "is-invalid");
+    feedback.classList.add("d-none");
+    return;
+  }
+
+  //find => retrn contact
+  //some => return true || false, its like any(c => c.phone == value) in c#
+  const exists = contacts.some((c) => c.phone === value);
+
+  input.classList.toggle("is-valid", !exists);
+  input.classList.toggle("is-invalid", exists);
+
+  if (exists) {
+    feedback.textContent = "Phone number already exists";
+    feedback.classList.remove("d-none");
+  } else {
+    feedback.classList.add("d-none");
+  }
+}
+
 // Initialize on page load
 document.addEventListener("DOMContentLoaded", () => {
   const contactName = document.getElementById("contactName");
@@ -525,9 +550,10 @@ document.addEventListener("DOMContentLoaded", () => {
   contactName.addEventListener("keyup", () =>
     validate(contactName, ValidationRules.name)
   );
-  contactPhone.addEventListener("keyup", () =>
-    validate(contactPhone, ValidationRules.phone)
-  );
+  contactPhone.addEventListener("keyup", () => {
+    validate(contactPhone, ValidationRules.phone);
+    isExist(contactPhone);
+  });
   contactEmail.addEventListener("keyup", () =>
     validate(contactEmail, ValidationRules.email)
   );
